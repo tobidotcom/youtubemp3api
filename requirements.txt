@@ -2,4 +2,4 @@ Flask
 pytube
 gunicorn
 yt-dlp
-Selenium
+selenium
