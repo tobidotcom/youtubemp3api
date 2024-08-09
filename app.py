@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify
-from pytube import YouTube
-from pydub import AudioSegment
+import yt_dlp
 import os
 
 app = Flask(__name__)
@@ -14,18 +13,24 @@ def convert_youtube_to_mp3():
         return jsonify({'error': 'URL is required'}), 400
 
     try:
-        # Download the video
-        yt = YouTube(url)
-        video_stream = yt.streams.filter(only_audio=True).first()
-        video_file = video_stream.download(filename="video.mp4")
+        # yt-dlp options to download audio directly in MP3 format
+        ydl_opts = {
+            'format': 'bestaudio/best',
+            'outtmpl': 'audio.%(ext)s',
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',
+                'preferredquality': '192',
+            }],
+            'quiet': True,
+            'no_warnings': True
+        }
 
-        # Convert to MP3
-        audio = AudioSegment.from_file(video_file)
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([url])
+
+        # Assume the file is named audio.mp3
         output_file = "audio.mp3"
-        audio.export(output_file, format="mp3")
-
-        # Clean up the video file
-        os.remove(video_file)
 
         # Return success response
         return jsonify({'message': 'Conversion successful', 'file': output_file}), 200
