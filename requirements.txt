@@ -1,4 +1,4 @@
 Flask
 pytube
-pydub
 gunicorn
+yt-dlp
