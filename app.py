@@ -3,6 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import time
 import logging
+import os
 
 app = Flask(__name__)
 
@@ -24,12 +25,14 @@ def download_video(url):
     options.add_argument('--disable-blink-features=AutomationControlled')
     options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36')
 
-    driver = webdriver.Chrome(options=options)
+    # Path to ChromeDriver; ensure it's included in your Heroku environment or use an alternative
+    driver_path = '/app/.chromedriver/bin/chromedriver'
+    driver = webdriver.Chrome(executable_path=driver_path, options=options)
+
     try:
         driver.get(url)
         time.sleep(10)  # Adjust as needed for page load time
-        # Handle downloading logic here; for example, you could trigger the download via JavaScript or interactions
-        # This part will vary based on how you plan to interact with the page and download content
+        # Implement your video download logic here
     finally:
         driver.quit()
 
